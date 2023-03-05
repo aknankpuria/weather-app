@@ -11,7 +11,20 @@ const getWeather = async (cityName) => {
         },
     };
 
-    return fetch(BASE_URL + cityName, options);
+    return new Promise((resolve, reject) => {
+        fetch(BASE_URL + cityName, options)
+            .then((response) => {
+                console.log(response.status);
+
+                if (response.status != 200) reject(response);
+
+                return response.json();
+            })
+            .then((response) => {
+                if (response.messages) reject(response.messages);
+                else resolve(response);
+            });
+    });
 };
 
 const updateWeatherFields = (data, cardNo) => {
@@ -34,29 +47,30 @@ const updateWeatherFields = (data, cardNo) => {
 };
 
 const updateCard = (cityName, cardNo) => {
-    document.querySelector(`#card${cardNo} .card_title`).innerHTML = cityName;
-
     getWeather(cityName)
-        .then((response) => response.json())
         .then((response) => {
-            console.log(response);
-
-            if (response.messages) console.error(response);
-            else updateWeatherFields(response, cardNo);
+            updateWeatherFields(response, cardNo);
+            document.querySelector(`#card${cardNo} .card_title`).innerHTML =
+                cityName;
         })
         .catch((error) => {
             console.error(error);
+            window.stop();
         });
 };
 
-submit.addEventListener("click", (e) => {
-    e.preventDefault();
+const main = () => {
+    updateCard("delhi", 1);
+    updateCard("chandigarh", 2);
+    updateCard("patiala", 3);
 
-    updateCard(document.querySelector("#card2 .card_title").innerHTML, 3);
-    updateCard(document.querySelector("#card1 .card_title").innerHTML, 2);
-    updateCard(document.getElementById("search-city").value, 1);
-});
+    document.querySelector("#submit").addEventListener("click", (e) => {
+        e.preventDefault();
 
-updateCard("delhi", 1);
-updateCard("chandigarh", 2);
-updateCard("patiala", 3);
+        updateCard(document.querySelector("#card2 .card_title").innerHTML, 3);
+        updateCard(document.querySelector("#card1 .card_title").innerHTML, 2);
+        updateCard(document.getElementById("search-city").value, 1);
+    });
+};
+
+main();
