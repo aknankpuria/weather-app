@@ -29,6 +29,9 @@ const getWeather = async (cityName) => {
             .then((response) => {
                 if (response.messages) reject(response.messages);
                 else resolve(response);
+            })
+            .catch((error) => {
+                console.error(error);
             });
     });
 };
@@ -71,6 +74,10 @@ const updateCard = (cityName, cardNo) => {
 
         return;
     }
+
+    document.querySelector(`#card${cardNo} .card_title`).innerHTML = `
+        <div class="spinner-border" role="status"></div>
+    `;
 
     getWeather(cityName)
         .then((response) => {

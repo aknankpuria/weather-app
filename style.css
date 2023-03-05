@@ -13,6 +13,10 @@
     background-position: center;
 }
 
+.card-header {
+    height: 68px;
+}
+
 .card-body li {
     padding: 0 15px;
     display: flex;
@@ -24,4 +28,8 @@
 .card:hover {
     transform: scale(1.03);
     transition: all 0.3s;
+}
+
+.spinner-border {
+    border-width: 2px;
 }
