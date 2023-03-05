@@ -1,3 +1,5 @@
+const cache = {};
+
 const getWeather = async (cityName) => {
     const BASE_URL =
         "https://weather-by-api-ninjas.p.rapidapi.com/v1/weather?city=";
@@ -62,8 +64,17 @@ const updateWeatherFields = (data, cardNo) => {
 };
 
 const updateCard = (cityName, cardNo) => {
+    if (Object.keys(cache).includes(cityName)) {
+        updateWeatherFields(cache[cityName], cardNo);
+        document.querySelector(`#card${cardNo} .card_title`).innerHTML =
+            cityName;
+
+        return;
+    }
+
     getWeather(cityName)
         .then((response) => {
+            cache[cityName] = response;
             updateWeatherFields(response, cardNo);
             document.querySelector(`#card${cardNo} .card_title`).innerHTML =
                 cityName;
@@ -82,13 +93,23 @@ const main = () => {
     document.querySelector("#submit").addEventListener("click", (e) => {
         e.preventDefault();
 
-        const value = document.getElementById("search-city").value;
-        const card1Title =
-            document.querySelector("#card1 .card_title").innerHTML;
-        const card2Title =
-            document.querySelector("#card2 .card_title").innerHTML;
-        const card3Title =
-            document.querySelector("#card3 .card_title").innerHTML;
+        // set cache size to 7. removes oldest cache entries
+        if (Object.keys(cache).length > 7) {
+            delete cache[Object.keys(cache)[0]];
+        }
+
+        const value = document
+            .getElementById("search-city")
+            .value.toLowerCase();
+        const card1Title = document
+            .querySelector("#card1 .card_title")
+            .innerHTML.toLowerCase();
+        const card2Title = document
+            .querySelector("#card2 .card_title")
+            .innerHTML.toLowerCase();
+        const card3Title = document
+            .querySelector("#card3 .card_title")
+            .innerHTML.toLowerCase();
 
         if (value == card1Title || value == card2Title || value == card3Title) {
             showToast("City already on display");
