@@ -14,9 +14,13 @@ const getWeather = async (cityName) => {
     return new Promise((resolve, reject) => {
         fetch(BASE_URL + cityName, options)
             .then((response) => {
-                console.log(response.status);
+                if (response.status != 200) {
+                    if (response.status == 400) {
+                        showToast("City not found");
+                    }
 
-                if (response.status != 200) reject(response);
+                    reject(response);
+                }
 
                 return response.json();
             })
@@ -25,6 +29,19 @@ const getWeather = async (cityName) => {
                 else resolve(response);
             });
     });
+};
+
+const showToast = (msg) => {
+    Toastify({
+        text: msg,
+        style: {
+            borderRadius: "7px",
+        },
+        offset: {
+            x: 0,
+            y: 55,
+        },
+    }).showToast();
 };
 
 const updateWeatherFields = (data, cardNo) => {
@@ -39,10 +56,8 @@ const updateWeatherFields = (data, cardNo) => {
     ];
 
     weatherFields.forEach((weatherField) => {
-        const weatherFieldElement = document.querySelector(
-            `#card${cardNo} .${weatherField}`
-        );
-        weatherFieldElement.innerHTML = data[weatherField];
+        document.querySelector(`#card${cardNo} .${weatherField}`).innerHTML =
+            data[weatherField];
     });
 };
 
@@ -67,9 +82,22 @@ const main = () => {
     document.querySelector("#submit").addEventListener("click", (e) => {
         e.preventDefault();
 
-        updateCard(document.querySelector("#card2 .card_title").innerHTML, 3);
-        updateCard(document.querySelector("#card1 .card_title").innerHTML, 2);
-        updateCard(document.getElementById("search-city").value, 1);
+        const value = document.getElementById("search-city").value;
+        const card1Title =
+            document.querySelector("#card1 .card_title").innerHTML;
+        const card2Title =
+            document.querySelector("#card2 .card_title").innerHTML;
+        const card3Title =
+            document.querySelector("#card3 .card_title").innerHTML;
+
+        if (value == card1Title || value == card2Title || value == card3Title) {
+            showToast("City already on display");
+            return;
+        }
+
+        updateCard(card2Title, 3);
+        updateCard(card1Title, 2);
+        updateCard(value, 1);
     });
 };
 
