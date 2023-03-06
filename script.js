@@ -94,7 +94,7 @@ const updateCard = (cityName, cardNo) => {
 
 const main = () => {
     updateCard("delhi", 1);
-    updateCard("chandigarh", 2);
+    updateCard("surrey", 2);
     updateCard("patiala", 3);
 
     document.querySelector("#submit").addEventListener("click", (e) => {
